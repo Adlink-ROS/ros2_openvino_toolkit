@@ -32,8 +32,10 @@ def generate_launch_description():
 
     return LaunchDescription([
         # RealSense
-         launch_ros.actions.Node(
-            package='realsense_ros2_camera', node_executable='realsense_ros2_camera',
+        launch_ros.actions.Node(
+            package='realsense_node', 
+            node_executable='realsense_node',
+            node_namespace='',
             output='screen'),
 
         # Openvino detection
