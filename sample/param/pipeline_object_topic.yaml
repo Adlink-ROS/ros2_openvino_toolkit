@@ -4,7 +4,7 @@ Pipelines:
   infers:
     - name: ObjectDetection
       model: /opt/openvino_toolkit/models/object_detection/mobilenet-ssd/caffe/output/FP16/mobilenet-ssd.xml
-      engine: MYRIAD
+      engine: CPU
       label: to/be/set/xxx.labels
       batch: 1
       confidence_threshold: 0.5

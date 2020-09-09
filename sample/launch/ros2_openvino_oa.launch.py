@@ -19,12 +19,23 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 import launch_ros.actions
-
+from launch.actions import DeclareLaunchArgument
+from launch.conditions import IfCondition
+from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
     default_yaml = os.path.join(get_package_share_directory('dynamic_vino_sample'), 'param',
-                                'pipeline_object_topic.yaml')
+                                'lite_pipeline_object_topic.yaml')
+    default_rviz = os.path.join(get_package_share_directory('dynamic_vino_sample'), 'launch',
+                                'rviz/default.rviz')
+    open_rviz = LaunchConfiguration('open_rviz', default='false')
+
     return LaunchDescription([
+        # RealSense
+         launch_ros.actions.Node(
+            package='realsense_ros2_camera', node_executable='realsense_ros2_camera',
+            output='screen'),
+
         # Openvino detection
         launch_ros.actions.Node(
             package='dynamic_vino_sample', node_executable='pipeline_with_params',
@@ -35,4 +46,14 @@ def generate_launch_description():
                  '/ros2_openvino_toolkit/detected_objects'),
                 ('/openvino_toolkit/object/images', '/ros2_openvino_toolkit/image_rviz')],
             output='screen'),
+
+        # Rviz
+        DeclareLaunchArgument(
+            'open_rviz',
+            default_value='false',
+            description='Launch Rviz?'),        
+        launch_ros.actions.Node(
+            package='rviz2', node_executable='rviz2', output='screen',
+            condition=IfCondition(LaunchConfiguration("open_rviz")),
+            arguments=['--display-config', default_rviz]),
     ])
